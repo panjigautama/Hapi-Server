@@ -13,6 +13,7 @@ return array(
     'CreateLocationsTable' => $baseDir . '/database/migrations/2015_08_22_072519_create_locations_table.php',
     'CreateReportsTable' => $baseDir . '/database/migrations/2015_08_22_072637_create_reports_table.php',
     'CreateSmsTable' => $baseDir . '/database/migrations/2015_08_22_051412_create_sms_table.php',
+    'CreateTwilioInboundsTable' => $baseDir . '/database/migrations/2015_08_22_131037_create_twilio_inbounds_table.php',
     'DataSourceTableSeeder' => $baseDir . '/database/seeds/DataSourceTableSeeder.php',
     'DatabaseSeeder' => $baseDir . '/database/seeds/DatabaseSeeder.php',
     'ExampleTest' => $baseDir . '/tests/ExampleTest.php',

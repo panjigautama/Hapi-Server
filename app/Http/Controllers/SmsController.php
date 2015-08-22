@@ -2,16 +2,18 @@
 
 namespace App\Http\Controllers;
 
-
 use App\Models\Commodity;
 use App\Models\DataSource;
 use App\Models\SMS;
 use App\Models\GoogleGeodecode;
 use App\Models\Location;
 use App\Models\Report;
+use App\Models\TwilioInbound;
 use GuzzleHttp\Client;
+use Carbon\Carbon;
+use Illuminate\Http\Request;
 
-class SmsController
+class SmsController extends Controller
 {
 
     public function getGeodecode($location)
@@ -55,20 +57,17 @@ class SmsController
         return $relevant_result;
     }
 
-    public function storeAndParseSMS()
+    public function storeAndParseSMS($sender, $content)
     {
-        $sms_sender = "+6285725706128";
-        $sms_content = "Rp150.000#pasar cipulir#daging has";
-
         // store to sms
         $sms = new SMS;
-        $sms->sender = $sms_sender;
-        $sms->content = $sms_content;
+        $sms->sender = $sender;
+        $sms->content = $content;
         $sms->save();
 
         // clean up sms content
         // sms content will be unparseable if the content array size is not 2 after exploded
-        $sms_item_arrays = explode("#", $sms_content);
+        $sms_item_arrays = explode("#", $content);
         $size_parser = count($sms_item_arrays);
         if ($size_parser >= 3) {
 
@@ -110,10 +109,64 @@ class SmsController
             $report->price = $price_cleaned;
             $report->save();
 
-            return "success";
+            return 1;
+        } else {
+            return 0;
+        }
+    }
+
+    /**
+     * ----------------------------------
+     * TWILIO HANDLER
+     * ----------------------------------
+     */
+    public function twilioRequestURL(Request $request)
+    {
+        $messageId = $request->input('MessageSid');
+        $smsId = $request->input('SmsSid');
+        $accountId = $request->input('AccountSid');
+        $from = $request->input('From');
+        $to = $request->input('To');
+        $body = $request->input('Body');
+        $numMedia = $request->input('NumMedia');
+
+        if (isset($messageId) && isset($smsId) && isset($accountId) && isset($from) && isset($to) && isset($body) && isset($numMedia)) {
+
+            // insert twilio logs
+            $twilioInbound = TwilioInbound::findOrNew($messageId);
+            $twilioInbound->message_id = $messageId;
+            $twilioInbound->sms_id = $smsId;
+            $twilioInbound->account_id = $accountId;
+            $twilioInbound->from = $from;
+            $twilioInbound->to = $to;
+            $twilioInbound->body = $body;
+            $twilioInbound->num_media = $numMedia;
+            $twilioInbound->save();
+
+            // process sms
+            $result = $this->storeAndParseSMS($twilioInbound->from, $twilioInbound->body);
+
+            // if ok then return twiML
+            if ($result == 1) {
+                $twiMl_response = '<?xml version="1.0" encoding="UTF-8" ?><Response><Message>Terima kasih telah melapor ! hati-hati kolesterol ! :)</Message></Response>';
+                return $twiMl_response;
+            }
+        } else {
+            return 0;
+        }
+    }
+
+    public function twilioGetInbounds()
+    {
+        $today = Carbon::now()->toDateString();
+        $client = new \GuzzleHttp\Client();
+        $response = $client->get('https://api.twilio.com/2010-04-01/Accounts/AC6c006185b0ee1a6a6556d7efb7e2377f/Messages.json?To=+18329003539&DateSent=' . $today, ['auth' => ['AC6c006185b0ee1a6a6556d7efb7e2377f', '26b43ef33b2e7942908a9816b63da1ee']]);
+        if ($response->getStatusCode() == 200) {
+            return $response->getBody();
         } else {
             return "error";
         }
     }
+
 
 }

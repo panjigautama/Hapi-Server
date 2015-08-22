@@ -12,8 +12,14 @@
 */
 
 $app->get('/', function () use ($app) {
-    return "{ 'message':'hapi'}";
+    return "message";
 //    return $app->welcome();
 });
 
-$app->get('/test_parse_sms', 'SmsController@storeAndParseSMS');
+// twilio
+$app->group(['prefix' => 'twilio'], function ($app) {
+
+    $app->get('manual_call', 'App\Http\Controllers\SmsController@storeAndParseSMS');
+    $app->get('request', 'App\Http\Controllers\SmsController@twilioRequestURL');
+
+});
