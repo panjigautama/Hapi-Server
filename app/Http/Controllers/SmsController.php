@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Commodity;
 use App\Models\DataSource;
+use App\Models\SMS;
 use App\Models\GoogleGeodecode;
 use App\Models\Location;
 use App\Models\Report;
@@ -15,8 +16,6 @@ class SmsController
 
     public function getGeodecode($location)
     {
-        $location = "pasar cipulir";
-
         $relevant_result = 0;
         $url_encoded_string = urlencode($location);
         $client = new \GuzzleHttp\Client();
@@ -31,6 +30,7 @@ class SmsController
 
                 // check whether result return more than one result
                 $result_size = count($results);
+
                 if ($result_size > 0) {
 
                     // iterate results
@@ -39,6 +39,7 @@ class SmsController
                         $googleGeocodeItem = $results[$counter];
                         // save geodecode result
                         $googleGeocode = GoogleGeodecode::findOrNew($googleGeocodeItem->place_id);
+                        $googleGeocode->place_id = $googleGeocodeItem->place_id;
                         $googleGeocode->formatted_address = $googleGeocodeItem->formatted_address;
                         $googleGeocode->location_lat = $googleGeocodeItem->geometry->location->lat;
                         $googleGeocode->location_lng = $googleGeocodeItem->geometry->location->lng;
@@ -57,7 +58,7 @@ class SmsController
     public function storeAndParseSMS()
     {
         $sms_sender = "+6285725706128";
-        $sms_content = "Rp150.000#pasar cipulir";
+        $sms_content = "Rp150.000#pasar cipulir#daging has";
 
         // store to sms
         $sms = new SMS;
@@ -68,23 +69,25 @@ class SmsController
         // clean up sms content
         // sms content will be unparseable if the content array size is not 2 after exploded
         $sms_item_arrays = explode("#", $sms_content);
-        if (!count($sms_item_arrays) < 3) {
+        $size_parser = count($sms_item_arrays);
+        if ($size_parser >= 3) {
 
             // index 0 is for price
             $price_dirty = $sms_item_arrays[0];
-            $price_dirty = preg_replace("/[^0-9,.]/", "", $price_dirty);
+            $price_dirty = preg_replace("/[^0-9]/", "", $price_dirty);
             $price_cleaned = trim($price_dirty);
 
             // index 1 is for location
             $location_dirty = $sms_item_arrays[1];
             $location = Location::where('name', 'LIKE', '%' . $location_dirty . '%')->first();
+
             if (count($location) == 0) {
                 $location = new Location;
                 // get geo location
                 $geodecode = $this->getGeodecode($location_dirty);
                 $location->name = $location_dirty;
-                $location->longitude = $geodecode == 0 ? $geodecode : $geodecode->location_lat;
-                $location->latitude = $geodecode == 0 ? $geodecode : $geodecode->location_lng;
+                $location->longitude = is_object($geodecode) ? $geodecode->location_lat : $geodecode;
+                $location->latitude = is_object($geodecode) ? $geodecode->location_lng : $geodecode;
                 $location->save();
             }
 
@@ -99,13 +102,17 @@ class SmsController
             }
 
             // save report
-            $reports = new Report;
-            $reports->commodities_id = $commodity->id();
-            $reports->location_id = $location->id();
-            $reports->data_sources_id = 1;
-            $reports->sms_id = $sms->id;
-            $reports->price = $price_cleaned;
-            $reports->save();
+            $report = new Report;
+            $report->commodities_id = $commodity->id;
+            $report->location_id = $location->id;
+            $report->data_sources_id = 1;
+            $report->sms_id = $sms->id;
+            $report->price = $price_cleaned;
+            $report->save();
+
+            return "success";
+        } else {
+            return "error";
         }
     }
 
