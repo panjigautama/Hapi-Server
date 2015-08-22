@@ -11,7 +11,11 @@
 |
 */
 
-$app->get('/', function() use ($app) {
-    return $app->welcome();
+$app->get('/', function () use ($app) {
+    return "{ 'message':'hapi'}";
+//    return $app->welcome();
 });
+
 $app->get('/test', 'TestController@index');
+
+$app->get('/test_parse_sms', 'SmsController@storeAndParseSMS');
