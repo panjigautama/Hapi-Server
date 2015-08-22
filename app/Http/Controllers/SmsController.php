@@ -5,11 +5,54 @@ namespace App\Http\Controllers;
 
 use App\Models\Commodity;
 use App\Models\DataSource;
+use App\Models\GoogleGeodecode;
 use App\Models\Location;
 use App\Models\Report;
+use GuzzleHttp\Client;
 
 class SmsController
 {
+
+    public function getGeodecode($location)
+    {
+        $location = "pasar cipulir";
+
+        $relevant_result = 0;
+        $url_encoded_string = urlencode($location);
+        $client = new \GuzzleHttp\Client();
+        $res = $client->get('https://maps.googleapis.com/maps/api/geocode/json?address=' . $url_encoded_string . '&key=AIzaSyAN6zAyOynhjQDMEdjRFMlOb8c7IrbUF-k');
+        if ($res->getStatusCode() == 200) {
+            $response_message = $res->getBody();
+            $response_message_json_obj = json_decode($response_message);
+
+            // check status from google geocoding API
+            if ($response_message_json_obj->status == "OK") {
+                $results = $response_message_json_obj->results;
+
+                // check whether result return more than one result
+                $result_size = count($results);
+                if ($result_size > 0) {
+
+                    // iterate results
+                    $counter = 0;
+                    while ($counter < $result_size) {
+                        $googleGeocodeItem = $results[$counter];
+                        // save geodecode result
+                        $googleGeocode = GoogleGeodecode::findOrNew($googleGeocodeItem->place_id);
+                        $googleGeocode->formatted_address = $googleGeocodeItem->formatted_address;
+                        $googleGeocode->location_lat = $googleGeocodeItem->geometry->location->lat;
+                        $googleGeocode->location_lng = $googleGeocodeItem->geometry->location->lng;
+                        $googleGeocode->save();
+                        $counter++;
+                    }
+
+                    // get relevant location with keyword
+                    $relevant_result = GoogleGeodecode::where('formatted_address', 'LIKE', '%' . $location . '%')->first();
+                }
+            }
+        }
+        return $relevant_result;
+    }
 
     public function storeAndParseSMS()
     {
@@ -37,11 +80,11 @@ class SmsController
             $location = Location::where('name', 'LIKE', '%' . $location_dirty . '%')->first();
             if (count($location) == 0) {
                 $location = new Location;
-                $location_lat = 0;
-                $location_lng = 0;
+                // get geo location
+                $geodecode = $this->getGeodecode($location_dirty);
                 $location->name = $location_dirty;
-                $location->longitude = $location_lat;
-                $location->latitude = $location_lng;
+                $location->longitude = $geodecode == 0 ? $geodecode : $geodecode->location_lat;
+                $location->latitude = $geodecode == 0 ? $geodecode : $geodecode->location_lng;
                 $location->save();
             }
 
@@ -61,6 +104,7 @@ class SmsController
             $reports->location_id = $location->id();
             $reports->data_sources_id = 1;
             $reports->sms_id = $sms->id;
+            $reports->price = $price_cleaned;
             $reports->save();
         }
     }
