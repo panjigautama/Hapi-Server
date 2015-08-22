@@ -45,6 +45,49 @@ class SmsController extends Controller
                         $googleGeocode->formatted_address = $googleGeocodeItem->formatted_address;
                         $googleGeocode->location_lat = $googleGeocodeItem->geometry->location->lat;
                         $googleGeocode->location_lng = $googleGeocodeItem->geometry->location->lng;
+
+                        // get address component
+                        $administrative_area_level_1 = "";
+                        $administrative_area_level_2 = "";
+                        $administrative_area_level_3 = "";
+                        $administrative_area_level_4 = "";
+                        $address_components = $googleGeocodeItem->address_components;
+                        $address_components_size = count($address_components);
+                        if ($address_components_size > 0) {
+                            $counter_address_component = 0;
+                            while ($counter_address_component < $address_components_size) {
+                                $address_component_item = $address_components[$counter_address_component];
+
+                                // get types
+                                $types = $address_component_item->types;
+                                $types_size = count($types);
+                                if ($types_size > 0) {
+                                    $counter_types = 0;
+                                    while ($counter_types < $types_size) {
+
+                                        // get administrative name
+                                        $type_item = $types[$counter_types];
+                                        if ($type_item == "administrative_area_level_1") {
+                                            $administrative_area_level_1 = $address_component_item->long_name;
+                                        } else if ($type_item == "administrative_area_level_2") {
+                                            $administrative_area_level_2 = $address_component_item->long_name;
+                                        } else if ($type_item == "administrative_area_level_3") {
+                                            $administrative_area_level_3 = $address_component_item->long_name;
+                                        } else if ($type_item == "administrative_area_level_4") {
+                                            $administrative_area_level_4 = $address_component_item->long_name;
+                                        }
+
+                                        $counter_types++;
+                                    }
+                                }
+                                $counter_address_component++;
+                            }
+                        }
+                        $googleGeocode->administrative_area_level_1 = $administrative_area_level_1;
+                        $googleGeocode->administrative_area_level_2 = $administrative_area_level_2;
+                        $googleGeocode->administrative_area_level_3 = $administrative_area_level_3;
+                        $googleGeocode->administrative_area_level_4 = $administrative_area_level_4;
+                        $googleGeocode->location_lng = $googleGeocodeItem->geometry->location->lng;
                         $googleGeocode->save();
                         $counter++;
                     }
