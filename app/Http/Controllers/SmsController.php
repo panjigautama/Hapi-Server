@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Commodity;
 use App\Models\DataSource;
-use App\Models\SMS;
+use App\Models\Sms;
 use App\Models\GoogleGeodecode;
 use App\Models\Location;
 use App\Models\Report;
@@ -60,7 +60,7 @@ class SmsController extends Controller
     public function storeAndParseSMS($sender, $content)
     {
         // store to sms
-        $sms = new SMS;
+        $sms = new Sms;
         $sms->sender = $sender;
         $sms->content = $content;
         $sms->save();
