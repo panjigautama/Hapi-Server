@@ -2,16 +2,18 @@
 
 namespace App\Http\Controllers;
 
-
 use App\Models\Commodity;
 use App\Models\DataSource;
-use App\Models\SMS;
+use App\Models\Sms;
 use App\Models\GoogleGeodecode;
 use App\Models\Location;
 use App\Models\Report;
+use App\Models\TwilioInbound;
 use GuzzleHttp\Client;
+use Carbon\Carbon;
+use Illuminate\Http\Request;
 
-class SmsController
+class SmsController extends Controller
 {
 
     public function getGeodecode($location)
@@ -43,6 +45,49 @@ class SmsController
                         $googleGeocode->formatted_address = $googleGeocodeItem->formatted_address;
                         $googleGeocode->location_lat = $googleGeocodeItem->geometry->location->lat;
                         $googleGeocode->location_lng = $googleGeocodeItem->geometry->location->lng;
+
+                        // get address component
+                        $administrative_area_level_1 = "";
+                        $administrative_area_level_2 = "";
+                        $administrative_area_level_3 = "";
+                        $administrative_area_level_4 = "";
+                        $address_components = $googleGeocodeItem->address_components;
+                        $address_components_size = count($address_components);
+                        if ($address_components_size > 0) {
+                            $counter_address_component = 0;
+                            while ($counter_address_component < $address_components_size) {
+                                $address_component_item = $address_components[$counter_address_component];
+
+                                // get types
+                                $types = $address_component_item->types;
+                                $types_size = count($types);
+                                if ($types_size > 0) {
+                                    $counter_types = 0;
+                                    while ($counter_types < $types_size) {
+
+                                        // get administrative name
+                                        $type_item = $types[$counter_types];
+                                        if ($type_item == "administrative_area_level_1") {
+                                            $administrative_area_level_1 = $address_component_item->long_name;
+                                        } else if ($type_item == "administrative_area_level_2") {
+                                            $administrative_area_level_2 = $address_component_item->long_name;
+                                        } else if ($type_item == "administrative_area_level_3") {
+                                            $administrative_area_level_3 = $address_component_item->long_name;
+                                        } else if ($type_item == "administrative_area_level_4") {
+                                            $administrative_area_level_4 = $address_component_item->long_name;
+                                        }
+
+                                        $counter_types++;
+                                    }
+                                }
+                                $counter_address_component++;
+                            }
+                        }
+                        $googleGeocode->administrative_area_level_1 = $administrative_area_level_1;
+                        $googleGeocode->administrative_area_level_2 = $administrative_area_level_2;
+                        $googleGeocode->administrative_area_level_3 = $administrative_area_level_3;
+                        $googleGeocode->administrative_area_level_4 = $administrative_area_level_4;
+                        $googleGeocode->location_lng = $googleGeocodeItem->geometry->location->lng;
                         $googleGeocode->save();
                         $counter++;
                     }
@@ -55,21 +100,19 @@ class SmsController
         return $relevant_result;
     }
 
-    public function storeAndParseSMS()
+    public function storeAndParseSMS($sender, $content)
     {
-        $sms_sender = "+6285725706128";
-        $sms_content = "Rp150.000#pasar cipulir#daging has";
-
         // store to sms
-        $sms = new SMS;
-        $sms->sender = $sms_sender;
-        $sms->content = $sms_content;
+        $sms = new Sms;
+        $sms->sender = $sender;
+        $sms->content = $content;
         $sms->save();
 
         // clean up sms content
         // sms content will be unparseable if the content array size is not 2 after exploded
-        $sms_item_arrays = explode("#", $sms_content);
+        $sms_item_arrays = explode("#", $content);
         $size_parser = count($sms_item_arrays);
+
         if ($size_parser >= 3) {
 
             // index 0 is for price
@@ -110,10 +153,66 @@ class SmsController
             $report->price = $price_cleaned;
             $report->save();
 
-            return "success";
+            return 1;
         } else {
-            return "error";
+            return 0;
         }
     }
+
+    /**
+     * ----------------------------------
+     * TWILIO HANDLER
+     * ----------------------------------
+     */
+    public function twilioRequestURL(Request $request)
+    {
+        $messageId = $request->input('MessageSid');
+        $smsId = $request->input('SmsSid');
+        $accountId = $request->input('AccountSid');
+        $from = $request->input('From');
+        $to = $request->input('To');
+        $body = $request->input('Body');
+        $numMedia = $request->input('NumMedia');
+
+        if (isset($messageId) && isset($smsId) && isset($accountId) && isset($from) && isset($to) && isset($body) && isset($numMedia)) {
+
+            // insert twilio logs
+            $twilioInbound = TwilioInbound::findOrNew($messageId);
+            $twilioInbound->message_id = $messageId;
+            $twilioInbound->sms_id = $smsId;
+            $twilioInbound->account_id = $accountId;
+            $twilioInbound->from = $from;
+            $twilioInbound->to = $to;
+            $twilioInbound->body = $body;
+            $twilioInbound->num_media = $numMedia;
+            $twilioInbound->save();
+
+            // process sms
+            $result = $this->storeAndParseSMS($twilioInbound->from, $twilioInbound->body);
+
+            // if ok then return twiML
+            if ($result == 1) {
+                $twiMl_response = '<?xml version="1.0" encoding="UTF-8" ?><Response><Message>Terima kasih telah melapor ! hati-hati kolesterol ! :)</Message></Response>';
+                return $twiMl_response;
+            } else {
+                return 0;
+            }
+        } else {
+            return 0;
+        }
+    }
+
+    public function twilioGetInbounds()
+    {
+        $today = Carbon::now()->toDateString();
+        $client = new \GuzzleHttp\Client();
+        $response = $client->get('https://api.twilio.com/2010-04-01/Accounts/AC6c006185b0ee1a6a6556d7efb7e2377f/Messages.json?To=+18329003539&DateSent=' . $today, ['auth' => ['AC6c006185b0ee1a6a6556d7efb7e2377f', '26b43ef33b2e7942908a9816b63da1ee']]);
+        if ($response->getStatusCode() == 200) {
+            return $response->getBody();
+        } else {
+            return 0;
+        }
+    }
+
 
 }

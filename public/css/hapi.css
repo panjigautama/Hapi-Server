@@ -1,0 +1,84 @@
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+#map{
+    height: 100%;
+}
+
+#search_container{
+    position: absolute;
+    left: 50%;
+    right: 90;
+    top: 100;
+    z-index: 99;
+}
+#panel {
+  position: absolute;
+  top: 10px;
+  z-index: 5;
+}
+
+#filter{
+    width: 100%;
+    position: absolute;
+    bottom: 0px;
+    z-index: 5;
+    background-color: #ffffff;
+    opacity: 0.8;
+}
+
+#pac-input{
+    padding: 22px;
+}
+
+#report{
+    padding: 12px 40px 12px 40px;
+}
+
+.regular-bold{
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.inner-filter{
+    padding: 10px 10px 30px 100px;
+}
+
+.district{
+    font-size: 18px;
+    color: #ED212E;
+}
+
+.commodity{
+    font-size: 16px;
+}
+
+.highest-price{
+    font-size: 16px;
+    color: #ED212E;
+}
+
+.lowest-price{
+    font-size: 16px;
+    color: #179647;
+}
+
+.global-highest{
+    font-size: 20px;
+    font-weight: bold;
+}
+
+
+.global-lowest{
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.increment{
+    font-size: 12px;
+    font-weight: bold;
+    color: #ED212e;
+    margin-bottom: 10px;
+}

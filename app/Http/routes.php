@@ -11,9 +11,20 @@
 |
 */
 
-$app->get('/', 'Controller@index');
-
+$app->get('/', 'HomeController@index');
+$app->get('/chart', 'Controller@index');
 $app->get('/test', 'TestController@index');
 $app->get('/parse-web-pasarjaya', 'WebParserController@parsePasarjaya');
 
-$app->get('/test_parse_sms', 'SmsController@storeAndParseSMS');
+
+/**
+ * --------------------------------------
+ * SMS Handler
+ * --------------------------------------
+ **/
+$app->group(['prefix' => 'sms'], function ($app) {
+
+    $app->get('manual_call', 'App\Http\Controllers\SmsController@storeAndParseSMS');
+    $app->post('request', 'App\Http\Controllers\SmsController@twilioRequestURL');
+
+});
