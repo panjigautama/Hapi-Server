@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Report;
 use Google_Auth_AssertionCredentials;
 use Google_Client;
 use Google_Service_Fusiontables;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class FusionTableController extends Controller
 {
@@ -55,7 +58,8 @@ class FusionTableController extends Controller
 
     public function updateFusionTable()
     {
-        
+        $results = DB::select("SELECT * FROM reports WHERE DATE(created_at) = CURDATE()");
+        return json_encode($results);
     }
 
 }

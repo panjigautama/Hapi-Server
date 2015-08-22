@@ -16,6 +16,7 @@ class DatabaseSeeder extends Seeder {
 
 		 $this->call('CommoditiesTableSeeder');
 		 $this->call('DataSourceTableSeeder');
+		 $this->call('GoogleGeocodesTableSeeder');
 	}
 
 }

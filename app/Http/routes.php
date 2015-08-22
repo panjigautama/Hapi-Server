@@ -31,11 +31,11 @@ $app->group(['prefix' => 'sms'], function ($app) {
 
 /**
  * --------------------------------------
- * Google API Handler
+ * Fusion Table Updater
  * --------------------------------------
  **/
-$app->group(['prefix' => 'google'], function ($app) {
+$app->group(['prefix' => 'fusion'], function ($app) {
 
-    $app->get('get_token', 'App\Http\Controllers\FusionTableController@generateFusionData');
+    $app->get('update', 'App\Http\Controllers\FusionTableController@updateFusionTable');
 
 });
