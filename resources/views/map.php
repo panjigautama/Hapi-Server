@@ -64,7 +64,7 @@
                 var highestPrice = e.row['highest_price'].value;
                 var lowestPrice = e.row['lowest_price'].value;
 
-                var html = "<img src='assets/ic_cow.png'><br/>";
+                var html = "<img src='img/ic_cow.png'><br/>";
                 html += "<span class='district'>"+districtName + "</span><br/><br/>";
                 html += "Harga tertinggi : <br/>";
                 html += "<span class='commodity'>Daging Sapi</span><br/>";
@@ -74,6 +74,7 @@
                 html += "<span class='commodity'>Daging Sapi</span><br/>";
                 html += "<span class='lowest-price'>Rp"+lowestPrice+"</span>";
                 html += "<br/><br/>"
+                html += "<button class='btn btn-success' id='detail' type='button' name='button'>Selengkapnya</button>"
                 e.infoWindowHtml = html;
             });
 
