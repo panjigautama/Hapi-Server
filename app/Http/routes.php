@@ -28,3 +28,14 @@ $app->group(['prefix' => 'sms'], function ($app) {
     $app->post('request', 'App\Http\Controllers\SmsController@twilioRequestURL');
 
 });
+
+/**
+ * --------------------------------------
+ * Google API Handler
+ * --------------------------------------
+ **/
+$app->group(['prefix' => 'google'], function ($app) {
+
+    $app->get('get_token', 'App\Http\Controllers\FusionTableController@generateFusionData');
+
+});
