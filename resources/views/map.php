@@ -3,7 +3,7 @@
   <head>
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
     <meta charset="utf-8">
-    <title>Fusion Tables layers</title>
+    <title>HaPi - Harga Sapi Bikin Hepi !</title>
     <script type="text/javascript" src="https://www.google.com/jsapi"></script>
     <script type="text/javascript" src="js/jquery-min.js"></script>
     <script type="text/javascript"
