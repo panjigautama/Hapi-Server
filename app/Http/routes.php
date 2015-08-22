@@ -27,6 +27,6 @@ $app->get('/test', 'TestController@index');
 $app->group(['prefix' => 'sms'], function ($app) {
 
     $app->get('manual_call', 'App\Http\Controllers\SmsController@storeAndParseSMS');
-    $app->get('request', 'App\Http\Controllers\SmsController@twilioRequestURL');
+    $app->post('request', 'App\Http\Controllers\SmsController@twilioRequestURL');
 
 });

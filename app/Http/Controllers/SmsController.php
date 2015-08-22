@@ -69,6 +69,7 @@ class SmsController extends Controller
         // sms content will be unparseable if the content array size is not 2 after exploded
         $sms_item_arrays = explode("#", $content);
         $size_parser = count($sms_item_arrays);
+
         if ($size_parser >= 3) {
 
             // index 0 is for price
@@ -150,6 +151,8 @@ class SmsController extends Controller
             if ($result == 1) {
                 $twiMl_response = '<?xml version="1.0" encoding="UTF-8" ?><Response><Message>Terima kasih telah melapor ! hati-hati kolesterol ! :)</Message></Response>';
                 return $twiMl_response;
+            } else {
+                return 0;
             }
         } else {
             return 0;
@@ -164,7 +167,7 @@ class SmsController extends Controller
         if ($response->getStatusCode() == 200) {
             return $response->getBody();
         } else {
-            return "error";
+            return 0;
         }
     }
 
