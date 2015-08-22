@@ -12,7 +12,9 @@
 */
 
 $app->get('/', 'HomeController@index');
+$app->get('/chart', 'Controller@index');
 $app->get('/test', 'TestController@index');
+$app->get('/parse-web-pasarjaya', 'WebParserController@parsePasarjaya');
 
 
 /**
@@ -24,5 +26,16 @@ $app->group(['prefix' => 'sms'], function ($app) {
 
     $app->get('manual_call', 'App\Http\Controllers\SmsController@storeAndParseSMS');
     $app->post('request', 'App\Http\Controllers\SmsController@twilioRequestURL');
+
+});
+
+/**
+ * --------------------------------------
+ * Fusion Table Updater
+ * --------------------------------------
+ **/
+$app->group(['prefix' => 'fusion'], function ($app) {
+
+    $app->get('update', 'App\Http\Controllers\FusionTableController@updateFusionTable');
 
 });
