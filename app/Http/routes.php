@@ -11,11 +11,7 @@
 |
 */
 
-$app->get('/', function () use ($app) {
-    return "message";
-//    return $app->welcome();
-});
-
+$app->get('/', 'HomeController@index');
 $app->get('/test', 'TestController@index');
 
 
