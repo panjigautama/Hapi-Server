@@ -16,8 +16,15 @@ $app->get('/', function () use ($app) {
 //    return $app->welcome();
 });
 
-// twilio
-$app->group(['prefix' => 'twilio'], function ($app) {
+$app->get('/test', 'TestController@index');
+
+
+/**
+ * --------------------------------------
+ * SMS Handler
+ * --------------------------------------
+ **/
+$app->group(['prefix' => 'sms'], function ($app) {
 
     $app->get('manual_call', 'App\Http\Controllers\SmsController@storeAndParseSMS');
     $app->get('request', 'App\Http\Controllers\SmsController@twilioRequestURL');
