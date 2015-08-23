@@ -74,7 +74,7 @@
                 html += "<span class='commodity'>Daging Sapi</span><br/>";
                 html += "<span class='lowest-price'>Rp"+lowestPrice+"</span>";
                 html += "<br/><br/>"
-                html += "<button class='btn btn-success' id='detail' type='button' name='button'>Selengkapnya</button>"
+                html += "<button class='btn btn-success' id='detail' type='button' name='button' onclick=\"location.href='<?php echo $app->make('url')->to('/');?>/chart?tgl1=<?php echo date('Y-m-d',strtotime('-6days'))?>&tgl2=<?php echo date('Y-m-d')?>'\">Selengkapnya</button>"
                 e.infoWindowHtml = html;
             });
 
