@@ -47,7 +47,7 @@ google.setOnLoadCallback(drawChart);
 
 function drawChart() {
     var data = new google.visualization.DataTable();
-    data.addColumn('number', 'Item');
+    data.addColumn('string', 'Item');
     <?php 
         
         $date = '';
@@ -65,9 +65,9 @@ function drawChart() {
         foreach($data As $dat){
             if ($date !=date('Y-m-d',strtotime($dat->created_at))){
             if ($date == '1'){
-            echo $i++;
+            echo '"'.date('Y-m-d',strtotime($dat->created_at)).'"'; $i++;
             }else
-            echo '],['.$i++;}
+            echo '],[ "'.date('Y-m-d',strtotime($dat->created_at)).'"';$i++;}
             $date = date('Y-m-d',strtotime($dat->created_at));
             echo ','.$dat->price.'';
 
