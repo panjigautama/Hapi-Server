@@ -14,7 +14,7 @@
   </head>
   <body>
   <div class="container">
-    <div style="float:left"><img src="<?php echo $app->make('url')->to('/');?>/img/logo.png"></div>
+    <div style="float:left"><img src="<?php echo $app->make('url')->to('/');?>/img/ic_logo.png"></div>
     <div style="float:left; padding: 30px;font-weight: 500;font-size: xx-large;">Analitycs</div>
     <div style="clear:both"></div>
     <div style="float:left;padding:0px 100px 0px 0px"><div>Jenis Daging</div><div style="font-weight: 500;font-size: xx-large;">< Daging Sapi ></div></div>
