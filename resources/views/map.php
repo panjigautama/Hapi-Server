@@ -17,6 +17,11 @@
         var service;
         var infoWindow;
         var map;
+
+        function numberThousandFormat(x) {
+            return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+        }
+
         function initialize() {
             map = new google.maps.Map(document.getElementById('map'), {
                 center: new google.maps.LatLng(-6.182310, 106.828723),
@@ -45,11 +50,11 @@
                 html += "<span class='district'>" + districtName + "</span><br/><br/>";
                 html += "Harga tertinggi : <br/>";
                 html += "<span class='commodity'>Daging Sapi</span><br/>";
-                html += "<span class='highest-price'>Rp" + highestPrice + "</span>";
+                html += "<span class='highest-price'>Rp" + numberThousandFormat(highestPrice) + "</span>";
                 html += "<br/><br/>"
                 html += "Harga terendah : <br/>";
                 html += "<span class='commodity'>Daging Sapi</span><br/>";
-                html += "<span class='lowest-price'>Rp" + lowestPrice + "</span>";
+                html += "<span class='lowest-price'>Rp" + numberThousandFormat(lowestPrice) + "</span>";
                 html += "<br/><br/>"
                 html += "<button class='btn btn-success' id='detail' type='button' name='button'>Selengkapnya</button>"
                 e.infoWindowHtml = html;
