@@ -297,7 +297,31 @@
             new google.maps.Marker({
                 position: new google.maps.LatLng(-6.24167,106.87361),
                 title: "PASAR KRAMATJATI"
-            })
+            }),
+            new google.maps.Marker({
+                position: new google.maps.LatLng(-6.27854,106.80818),
+                title: "PASAR CIPETE SELATAN"
+            }),
+            new google.maps.Marker({
+                position: new google.maps.LatLng(-6.23877,106.9026842),
+                title: "PASAR PONDOK BAMBU"
+            }),
+            new google.maps.Marker({
+                position: new google.maps.LatLng(-6.2274347,106.9061249),
+                title: "PASAR SAWAH BARAT"
+            }),
+            new google.maps.Marker({
+                position: new google.maps.LatLng(-6.27854,106.80818),
+                title: "PASAR PALMERAH"
+            }),
+            new google.maps.Marker({
+                position: new google.maps.LatLng( -6.2177,106.76966),
+                title: "PASAR POS PENGUMBEN"
+            }),
+            new google.maps.Marker({
+                position: new google.maps.LatLng( -6.21367,106.82621),
+                title: "PASAR KARET BELAKANG"
+            }),
         ];
 
         google.maps.event.addDomListener(window, 'load', initialize);
