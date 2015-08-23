@@ -3,7 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class UpdateReportsTable extends Migration
+class UpdateLocationsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -12,12 +12,12 @@ class UpdateReportsTable extends Migration
      */
     public function up()
     {
-        Schema::table('reports', function ($table) {
-            $table->unsignedInteger('google_geocode_id',10)->default(0);
+        Schema::table('locations', function ($table) {
+            $table->string('google_geocode_id')->default("uncategorized");
         });
 
-        Schema::table('reports', function ($table) {
-            $table->foreign('google_geocode_id')->references('id')->on('google_geocodes');
+        Schema::table('locations', function ($table) {
+            $table->foreign('google_geocode_id')->references('place_id')->on('google_geocodes');
         });
     }
 

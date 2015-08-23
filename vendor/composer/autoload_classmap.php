@@ -20,6 +20,7 @@ return array(
     'File_Iterator' => $vendorDir . '/phpunit/php-file-iterator/src/Iterator.php',
     'File_Iterator_Facade' => $vendorDir . '/phpunit/php-file-iterator/src/Facade.php',
     'File_Iterator_Factory' => $vendorDir . '/phpunit/php-file-iterator/src/Factory.php',
+    'GoogleGeocodesTableSeeder' => $baseDir . '/database/seeds/GoogleGeocodesTableSeeder.php',
     'Google_Auth_Abstract' => $vendorDir . '/google/apiclient/src/Google/Auth/Abstract.php',
     'Google_Auth_AppIdentity' => $vendorDir . '/google/apiclient/src/Google/Auth/AppIdentity.php',
     'Google_Auth_AssertionCredentials' => $vendorDir . '/google/apiclient/src/Google/Auth/AssertionCredentials.php',
@@ -3478,5 +3479,6 @@ return array(
     'TestCase' => $baseDir . '/tests/TestCase.php',
     'Text_Template' => $vendorDir . '/phpunit/php-text-template/src/Template.php',
     'UpdateGoogleGeocodeTable' => $baseDir . '/database/migrations/2015_08_22_152406_update_google_geocode_table.php',
+    'UpdateLocationsTable' => $baseDir . '/database/migrations/2015_08_23_065642_update_locations_table.php',
     'UpdateReportsTable' => $baseDir . '/database/migrations/2015_08_22_085855_update_reports_table.php',
 );
