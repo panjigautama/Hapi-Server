@@ -133,8 +133,8 @@ class SmsController extends Controller
                 $location->longitude = is_object($geodecode) ? $geodecode->location_lat : $geodecode;
                 $location->latitude = is_object($geodecode) ? $geodecode->location_lng : $geodecode;
                 $location->save();
-            }else{
-                if($location->google_geocode_id == 'uncategorized'){
+            } else {
+                if ($location->google_geocode_id == 'uncategorized') {
                     $geodecode = $this->getGeodecode($location_dirty);
                     $location->google_geocode_id = is_object($geodecode) ? $geodecode->place_id : 'uncategorized';
                     $location->save();
