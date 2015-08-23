@@ -3,16 +3,18 @@ html, body {
   margin: 0;
   padding: 0;
 }
+
+.logo{
+    margin: 20px;
+}
+
 #map{
     height: 100%;
 }
 
 #search_container{
-    position: absolute;
-    left: 50%;
-    right: 90;
-    top: 100;
-    z-index: 99;
+    margin-left: 0 !important;
+    margin-top: 20px;
 }
 #panel {
   position: absolute;
@@ -29,12 +31,26 @@ html, body {
     opacity: 0.8;
 }
 
+
+#report-form{
+    width: 100%;
+    position: absolute;
+    bottom: 0px;
+    z-index: 5;
+    background-color: #ffffff;
+    opacity: 0.8;
+}
+
 #pac-input{
     padding: 22px;
 }
 
 #report{
     padding: 12px 40px 12px 40px;
+}
+
+.margin-100{
+    margin-left: 50px;
 }
 
 .regular-bold{
@@ -44,6 +60,10 @@ html, body {
 
 .inner-filter{
     padding: 10px 10px 30px 100px;
+}
+
+#report-form .inner-filter{
+    padding: 40px 40px 60px 100px !important;
 }
 
 .district{
@@ -81,4 +101,8 @@ html, body {
     font-weight: bold;
     color: #ED212e;
     margin-bottom: 10px;
+}
+
+#save-report{
+    padding: 10px 30px 10px 30px;
 }

@@ -28,3 +28,14 @@ $app->group(['prefix' => 'sms'], function ($app) {
     $app->post('request', 'App\Http\Controllers\SmsController@twilioRequestURL');
 
 });
+
+/**
+ * --------------------------------------
+ * Fusion Table Updater
+ * --------------------------------------
+ **/
+$app->group(['prefix' => 'fusion'], function ($app) {
+
+    $app->get('update', 'App\Http\Controllers\FusionTableController@updateFusionTable');
+
+});
