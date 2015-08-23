@@ -129,10 +129,16 @@ class SmsController extends Controller
                 // get geo location
                 $geodecode = $this->getGeodecode($location_dirty);
                 $location->name = $location_dirty;
-                $location->google_geocode_id = $geodecode->id;
+                $location->google_geocode_id = is_object($geodecode) ? 'uncategorized' : $geodecode->place_id;
                 $location->longitude = is_object($geodecode) ? $geodecode->location_lat : $geodecode;
                 $location->latitude = is_object($geodecode) ? $geodecode->location_lng : $geodecode;
                 $location->save();
+            }else{
+                if($location->google_geocode_id == 'uncategorized'){
+                    $geodecode = $this->getGeodecode($location_dirty);
+                    $location->google_geocode_id = is_object($geodecode) ? $geodecode->place_id : 'uncategorized';
+                    $location->save();
+                }
             }
 
             // index 2 is for commodities type
