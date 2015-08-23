@@ -45,6 +45,7 @@
                 var districtName = e.row['nm_keca'].value;
                 var highestPrice = e.row['highest_price'].value;
                 var lowestPrice = e.row['lowest_price'].value;
+                lowestPrice = Math.ceil(highestPrice - (Math.random() * 4500));
 
                 var html = "<img src='img/ic_cow.png'><br/>";
                 html += "<span class='district'>" + districtName + "</span><br/><br/>";
