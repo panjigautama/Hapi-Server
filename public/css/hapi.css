@@ -3,6 +3,11 @@ html, body {
   margin: 0;
   padding: 0;
 }
+
+.logo{
+    margin: 20px;
+}
+
 #map{
     height: 100%;
 }

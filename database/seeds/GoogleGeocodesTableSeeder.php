@@ -9,7 +9,6 @@ class GoogleGeocodesTableSeeder extends DatabaseSeeder
     public function run()
     {
         GoogleGeodecode::create([
-            'id' => 0,
             'place_id' => 'uncategorized',
             'formatted_address' => 'uncategorized',
             'location_lat' => '0',

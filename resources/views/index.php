@@ -13,17 +13,28 @@
     <![endif]-->
   </head>
   <body>
-  
   <div class="container">
-    <h1>Hapi</h1>
-    <div>Harga Sapi</div>
+    <div style="float:left"><img src="<?php echo $app->make('url')->to('/');?>/img/ic_logo.png"></div>
+    <div style="float:left; padding: 30px;font-weight: 500;font-size: xx-large;">Analitycs</div>
+    <div style="clear:both"></div>
+    <div style="float:left;padding:0px 100px 0px 0px"><div>Jenis Daging</div><div style="font-weight: 500;font-size: xx-large;">< Daging Sapi ></div></div>
+    <div style="float:left;padding:0px 100px 0px 0px"><div>Daerah Penjual</div><div style="font-weight: 500;font-size: xx-large;">DKI Jakarta</div><div>Daerah Bandung dan 3 lokasi lain</div></div>
+    <div style="float:right;"><div>Durasi</div>
+        <button class="btn  <?php echo (isset($_GET['tgl1']) && $_GET['tgl1'] == date('Y-m-d',strtotime('-29days')))? 'btn-success': 'btn-default';?>" style="width: 150px; border: 2px solid #5cb85c" onclick="location.href='<?php echo $app->make('url')->to('/');?>/chart?tgl1=<?php echo date('Y-m-d',strtotime('-29days'))?>&tgl2=<?php echo date('Y-m-d')?>'">30 Hari</button>
+        <button class="btn <?php echo (isset($_GET['tgl1']) && $_GET['tgl1'] == date('Y-m-d',strtotime('-6days')))? 'btn-success': 'btn-default';?>" style="width: 150px; border: 2px solid #5cb85c"  onclick="location.href='<?php echo $app->make('url')->to('/');?>/chart?tgl1=<?php echo date('Y-m-d',strtotime('-6days'))?>&tgl2=<?php echo date('Y-m-d')?>'">7 Hari</button>
+        <button class="btn  <?php echo (isset($_GET['tgl1']) && $_GET['tgl1'] == date('Y-m-d'))? 'btn-success': 'btn-default';?>" style="width: 150px; border: 2px solid #5cb85c" onclick="location.href='<?php echo $app->make('url')->to('/');?>/chart?tgl1=<?php echo date('Y-m-d')?>&tgl2=<?php echo date('Y-m-d')?>'">Hari Ini</button></div>
+    <div style="clear:both"></div>
     <div id="chart"></div>
         <ul id="series" style="list-style: none">
-            <li><input type="checkbox" name="series" value="1" checked="true" /> DKI Jakarta</li>
-            <li><input type="checkbox" name="series" value="2" checked="true" /> Bandung</li>
-            <li><input type="checkbox" name="series" value="3" checked="true" /> Yogya</li>
-            <li><input type="checkbox" name="series" value="4" checked="true" /> Semarang</li>
-            <li><input type="checkbox" name="series" value="5" checked="true" /> Surabaya</li>
+            <?php 
+            $i = 0;$date = '';
+            foreach($data As $dat){
+            
+            if($date=='' || $date==date('Y-m-d',strtotime($dat->created_at))){
+                $date = date('Y-m-d',strtotime($dat->created_at));
+                echo '<li style="float:left; padding: 10px 40px 10px 40px;"><input type="checkbox" name="series" value="'. $i++ .'" checked="true" /> '.$dat->location->name.'</li>';
+            }
+            }?>
         </ul>
     </div>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
@@ -37,19 +48,32 @@ google.setOnLoadCallback(drawChart);
 function drawChart() {
     var data = new google.visualization.DataTable();
     data.addColumn('number', 'Item');
-    data.addColumn('number', 'DKI Jakarta');
-    data.addColumn('number', 'Bandung');
-    data.addColumn('number', 'Yogya');
-    data.addColumn('number', 'Semarang');
-    data.addColumn('number', 'Surabaya');
+    <?php 
+        
+        $date = '';
+        foreach($data As $dat){
+            if($date=='' || $date==date('Y-m-d',strtotime($dat->created_at))){
+                $date = date('Y-m-d',strtotime($dat->created_at));
+                echo "data.addColumn('number', '".$dat->location->name."');";
+            }
+        }
+    ?>
     
-    data.addRows([
-        [0, 2, 1, 5,4,5],
-        [1, 3, 7, 2,3,6],
-        [2, 5, 4, 7,5,6],
-        [3, 4, 6, 2,6,5],
-        [4, 1, 5, 8,4,6]
-    ]);
+    data.addRows([[
+    <?php 
+        $i=0;$date = '1';
+        foreach($data As $dat){
+            if ($date !=date('Y-m-d',strtotime($dat->created_at))){
+            if ($date == '1'){
+            echo $i;
+            }else
+            echo '],['.$i++;}
+            $date = date('Y-m-d',strtotime($dat->created_at));
+            echo ','.$dat->price.'';
+
+        }
+    ?>
+    ]]);
     
     var view = new google.visualization.DataView(data);
     var option =  {
@@ -68,6 +92,12 @@ function drawChart() {
             hAxis: {baselineColor: '#FFFFFF'},
             backgroundColor: '#EfEfEf',
             'chartArea': {'width': '100%', 'height': '80%'},
+            vAxis: { 
+                    viewWindowMode:'explicit',
+                    viewWindow: {
+                        min:100000
+                    }
+                }
               // 'legend': {'position': 'bottom'}
         }
     var chart = new google.visualization.LineChart($('#chart')[0]);
@@ -87,4 +117,3 @@ function drawChart() {
     
   </body>
 </html>
-
