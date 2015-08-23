@@ -48,15 +48,17 @@
                 html += "<button class='btn btn-success' id='detail' type='button' name='button'>Selengkapnya</button>"
                 e.infoWindowHtml = html;
 
-                console.log(e.row['geometry'].value);
+                // console.log(e.row['geometry'].value);
+                // performPlacesSearch(e.row['geometry'].value);
+
             });
 
             $(document).ready(function() {
                 $('input[type=radio][name=data]').change(function(){
                     if(this.value == 'comm'){
-                        updateLayerQuery(layer, 10000);
+                        updateLayerQuery(layer, 15000);
                     }else{
-                        updateLayerQuery(layer, 5000);
+                        updateLayerQuery(layer, 10000);
                     }
                     layer.setMap(map);
                 });
@@ -64,12 +66,17 @@
 
             infoWindow = new google.maps.InfoWindow();
             service = new google.maps.places.PlacesService(map);
+            for (var i = 0; i < pdPasarJayaLatLng.length; i++) {
+                pdPasarJaya = pdPasarJayaLatLng[i];
+                addMarker(pdPasarJaya);
+            }
+            //map.addListener('idle', performPlacesSearch());
         }
 
-        function performPlacesSearch(bounds){
+        function performPlacesSearch(){
             var request = {
-                location: location,
-                radius: 500,
+                location: map.getCenter(),
+                radius: 200,
                 types: ['grocery_or_supermarket']
               };
               service.radarSearch(request, callback);
@@ -86,27 +93,27 @@
           }
         }
 
-        function addMarker(place) {
-          var marker = new google.maps.Marker({
-            map: map,
-            position: place.geometry.location,
-            icon: {
+        function addMarker(marker) {
+
+          marker.setIcon({
               url: 'http://maps.gstatic.com/mapfiles/circle.png',
               anchor: new google.maps.Point(10, 10),
               scaledSize: new google.maps.Size(10, 17)
-            }
           });
-
-          google.maps.event.addListener(marker, 'click', function() {
-            service.getDetails(place, function(result, status) {
-              if (status !== google.maps.places.PlacesServiceStatus.OK) {
-                console.error(status);
-                return;
-              }
-              infoWindow.setContent(result.name);
-              infoWindow.open(map, marker);
+          marker.setMap(map);
+        //   var marker = new google.maps.Marker({
+        //     map: map,
+        //     position: place.geometry.location,
+        //     icon: {
+        //       url: 'http://maps.gstatic.com/mapfiles/circle.png',
+        //       anchor: new google.maps.Point(10, 10),
+        //       scaledSize: new google.maps.Size(10, 17)
+        //     }
+        //   });
+            marker.addListener('click', function() {
+                infoWindow.setContent(marker.getTitle());
+                infowindow.open(map, marker);
             });
-          });
         }
 
         // var initialLocation;
@@ -147,34 +154,16 @@
                       where: where
                   },
                 styles: [{
-                    where: "'price_fraction' <= 0.2",
+                    where: "'highest_price' >= 150000",
                     polygonOptions: {
                             fillColor: "#ED212E",
-                            fillOpacity: 0.2,
+                            fillOpacity: 0.9,
                             strokeColor: "#FFFFFF",
                             strokeWeight: 1
                         }
                     },
                     {
-                    where: "'price_fraction' > 0.2 AND 'price_fraction' <= 0.4",
-                    polygonOptions: {
-                            fillColor: "#ED212E",
-                            fillOpacity: 0.3,
-                            strokeColor: "#FFFFFF",
-                            strokeWeight: 1
-                        }
-                    },
-                    {
-                    where: "'price_fraction' > 0.4 AND 'price_fraction' <= 0.6",
-                    polygonOptions: {
-                            fillColor: "#ED212E",
-                            fillOpacity: 0.5,
-                            strokeColor: "#FFFFFF",
-                            strokeWeight: 1
-                        }
-                    },
-                    {
-                    where: "'price_fraction' > 0.6 AND 'price_fraction' <= 0.8",
+                    where: "'highest_price' > 100000 AND 'highest_price' <= 149999",
                     polygonOptions: {
                             fillColor: "#ED212E",
                             fillOpacity: 0.7,
@@ -183,10 +172,28 @@
                         }
                     },
                     {
-                    where: "'price_fraction' > 0.8",
+                    where: "'highest_price' > 80000 AND 'highest_price' <= 99999",
                     polygonOptions: {
                             fillColor: "#ED212E",
-                            fillOpacity: 0.9,
+                            fillOpacity: 0.5,
+                            strokeColor: "#FFFFFF",
+                            strokeWeight: 1
+                        }
+                    },
+                    {
+                    where: "'highest_price' > 59999 AND 'highest_price' <= 80000",
+                    polygonOptions: {
+                            fillColor: "#ED212E",
+                            fillOpacity: 0.3,
+                            strokeColor: "#FFFFFF",
+                            strokeWeight: 1
+                        }
+                    },
+                    {
+                    where: "'highest_price' < 59999",
+                    polygonOptions: {
+                            fillColor: "#ED212E",
+                            fillOpacity: 0.2,
                             strokeColor: "#FFFFFF",
                             strokeWeight: 1
                         }
@@ -259,6 +266,26 @@
           'elementType': 'geometry',
           'stylers': [{'visibility': 'on'}, {'hue': '#5f94ff'}, {'lightness': 60}]
         }];
+
+        var pdPasarJayaLatLng = [
+            new google.maps.Marker({
+                position: new google.maps.LatLng(-6.2567533,106.8654005),
+                title: "PASAR JAMBUL BARU"
+            }),
+            new google.maps.Marker({
+                position: new google.maps.LatLng(-6.245664,106.8001754),
+                title: "PASAR MELAWAI BLOK M SQUARE"
+            }),
+            new google.maps.Marker({
+                position: new google.maps.LatLng(-6.24167,106.87361),
+                title: "PASAR CAWANG KAVLING"
+            }),
+            new google.maps.Marker({
+                position: new google.maps.LatLng(-6.24167,106.87361),
+                title: "PASAR KRAMATJATI"
+            })
+        ];
+
         google.maps.event.addDomListener(window, 'load', initialize);
     </script>
   </head>
