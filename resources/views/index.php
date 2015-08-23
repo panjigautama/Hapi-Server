@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Hapi</title>
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet">
-
+    <link rel="icon" type="img/ico" href="img/ic_cow.png">
     <!--[if lt IE 9]>
       <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
@@ -14,10 +14,10 @@
   </head>
   <body>
   <div class="container">
-    <div style="float:left"><img src="<?php echo $app->make('url')->to('/');?>/img/ic_logo.png"></div>
-    <div style="float:left; padding: 30px;font-weight: 500;font-size: xx-large;">Analitycs</div>
+    <div style="float:left"><a href="<?php echo $app->make('url')->to('/');?>"><img src="<?php echo $app->make('url')->to('/');?>/img/ic_logo.png"></a></div>
+    <div style="float:left; padding: 30px;font-weight: 500;font-size: xx-large;">Analytics</div>
     <div style="clear:both"></div>
-    <div style="float:left;padding:0px 100px 0px 0px"><div>Jenis Daging</div><div style="font-weight: 500;font-size: xx-large;">< Daging Sapi ></div></div>
+    <div style="float:left;padding:0px 100px 0px 0px"><div>Jenis Daging</div><div style="font-weight: 500;font-size: xx-large;"><a title="prev"><</a> Daging Sapi <a title title="next">></a></div></div>
     <div style="float:left;padding:0px 100px 0px 0px"><div>Daerah Penjual</div><div style="font-weight: 500;font-size: xx-large;">DKI Jakarta</div><div>Daerah Bandung dan 3 lokasi lain</div></div>
     <div style="float:right;"><div>Durasi</div>
         <button class="btn  <?php echo (isset($_GET['tgl1']) && $_GET['tgl1'] == date('Y-m-d',strtotime('-29days')))? 'btn-success': 'btn-default';?>" style="width: 150px; border: 2px solid #5cb85c" onclick="location.href='<?php echo $app->make('url')->to('/');?>/chart?tgl1=<?php echo date('Y-m-d',strtotime('-29days'))?>&tgl2=<?php echo date('Y-m-d')?>'">30 Hari</button>
@@ -65,7 +65,7 @@ function drawChart() {
         foreach($data As $dat){
             if ($date !=date('Y-m-d',strtotime($dat->created_at))){
             if ($date == '1'){
-            echo $i;
+            echo $i++;
             }else
             echo '],['.$i++;}
             $date = date('Y-m-d',strtotime($dat->created_at));
@@ -89,9 +89,8 @@ function drawChart() {
                 4: { color: '#ed212e' },
                 5: { color: '#c3283c' },
             },
-            hAxis: {baselineColor: '#FFFFFF'},
             backgroundColor: '#EfEfEf',
-            'chartArea': {'width': '100%', 'height': '80%'},
+            'chartArea': { 'wide':'80%', 'height': '80%'},
             vAxis: { 
                     viewWindowMode:'explicit',
                     viewWindow: {
